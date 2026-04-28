@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Shift Planner — POOL Model</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f5f5f3;
+  --bg3: #ededea;
+  --text: #1a1a1a;
+  --text2: #6b6b6b;
+  --text3: #999;
+  --border: rgba(0,0,0,0.1);
+  --border2: rgba(0,0,0,0.2);
+  --green-bg: #eaf3de; --green-text: #27500a; --green-border: #97c459;
+  --amber-bg: #faeeda; --amber-text: #633806; --amber-border: #ef9f27;
+  --red-bg: #fcebeb;   --red-text: #791f1f;   --red-border: #f09595;
+  --blue-bg: #e6f1fb;  --blue-text: #0c447c;  --blue-border: #85b7eb;
+  --purple-bg: #eeedfe;--purple-text: #3c3489;--purple-border: #afa9ec;
+  --radius: 8px; --radius-lg: 12px;
+  --shift-day: #eaf3de;
+  --shift-night: #e6f1fb;
+  --shift-sl: #fcebeb;
+  --shift-usl: #faeeda;
+  --shift-l: #faeeda;
+  --shift-tr: #eeedfe;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1a; --bg2: #242422; --bg3: #2c2c2a;
+    --text: #f0ede8; --text2: #a0a09a; --text3: #666;
+    --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+    --green-bg:#173404;--green-text:#c0dd97;
+    --amber-bg:#412402;--amber-text:#fac775;
+    --red-bg:#501313;--red-text:#f7c1c1;
+    --blue-bg:#042c53;--blue-text:#b5d4f4;
+    --purple-bg:#26215c;--purple-text:#cecbf6;
+    --shift-day:#173404; --shift-night:#042c53;
+    --shift-sl:#501313; --shift-usl:#412402; --shift-l:#412402; --shift-tr:#26215c;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+.app{max-width:1400px;margin:0 auto;padding:16px}
+
+/* Header */
+.header{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;border-bottom:0.5px solid var(--border);padding-bottom:16px}
+.header h1{font-size:16px;font-weight:600;flex:1;min-width:200px}
+.header h1 span{font-size:11px;font-weight:400;color:var(--text2);margin-left:6px}
+.sync-btn{padding:6px 14px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px}
+.sync-btn:hover{background:var(--bg2)}
+.sync-status{font-size:11px;color:var(--text3)}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--bg2);border-radius:var(--radius);padding:3px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:none;background:transparent;color:var(--text2);font-weight:400;white-space:nowrap}
+.tab.active{background:var(--bg);color:var(--text);font-weight:500;border:0.5px solid var(--border)}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px}
+.kpi{background:var(--bg2);border-radius:var(--radius);padding:10px 12px}
+.kpi .kl{font-size:10px;color:var(--text2);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.kpi .kv{font-size:20px;font-weight:600;color:var(--text)}
+.kpi .ks{font-size:10px;color:var(--text3);margin-top:1px}
+.kpi.ok .kv{color:#3b6d11} .kpi.warn .kv{color:#ba7517} .kpi.danger .kv{color:#a32d2d}
+
+/* Section */
+.section{display:none}.section.active{display:block}
+.section-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+/* Planning */
+.week-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.week-nav button{padding:5px 12px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);cursor:pointer;color:var(--text)}
+.week-nav button:hover{background:var(--bg2)}
+.wlabel{font-size:13px;font-weight:600;min-width:100px;text-align:center}
+.grid-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--radius-lg)}
+table.plan{border-collapse:collapse;font-size:11px;min-width:750px;width:100%}
+table.plan th{background:var(--bg2);padding:7px 6px;text-align:center;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);font-weight:500;font-size:10px;color:var(--text2);white-space:nowrap}
+table.plan th:last-child{border-right:none}
+table.plan td{padding:2px 3px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);text-align:center;vertical-align:middle}
+table.plan td:last-child{border-right:none}
+table.plan tr:last-child td{border-bottom:none}
+.aname{text-align:left!important;font-weight:500;font-size:11px;white-space:nowrap;padding:4px 10px!important;background:var(--bg2)}
+.rbadge{display:inline-block;font-size:9px;padding:1px 4px;border-radius:3px;margin-left:3px}
+.rtl{background:var(--blue-bg);color:var(--blue-text)}
+.rdtl{background:var(--green-bg);color:var(--green-text)}
+.rso{background:var(--bg3);color:var(--text2)}
+.cell-sel{width:100%;font-size:10px;border:none;background:transparent;cursor:pointer;color:var(--text);padding:3px 0;min-width:72px}
+.sd{background:var(--shift-day)} .sn{background:var(--shift-night)}
+.ssl{background:var(--shift-sl)} .susl{background:var(--shift-usl)}
+.sl_{background:var(--shift-l)} .str{background:var(--shift-tr)} .soff{background:transparent}
+.hok{color:#3b6d11;font-weight:600;font-size:11px} .hwarn{color:#ba7517;font-weight:600;font-size:11px} .hover_{color:#a32d2d;font-weight:600;font-size:11px}
+.sep-row td{height:3px;background:var(--bg3);padding:0}
+
+/* Overview */
+.ov-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--radius-lg)}
+table.ov{border-collapse:collapse;font-size:11px;width:100%}
+table.ov th{background:var(--bg2);padding:6px 5px;text-align:center;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);font-size:10px;font-weight:500;color:var(--text2)}
+table.ov th.clickable{cursor:pointer} table.ov th.clickable:hover{background:var(--bg3)}
+table.ov td{padding:4px 3px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);text-align:center;font-size:11px;cursor:pointer}
+table.ov tr:last-child td{border-bottom:none}
+table.ov td:last-child,table.ov th:last-child{border-right:none}
+.ov-agent{text-align:left!important;font-weight:500;white-space:nowrap;padding:4px 8px!important;background:var(--bg2);cursor:default!important}
+.wok{background:var(--green-bg);color:var(--green-text)}
+.wwarn{background:var(--amber-bg);color:var(--amber-text)}
+.wover{background:var(--red-bg);color:var(--red-text)}
+.wsel{outline:2px solid #378add;outline-offset:-1px}
+.ov-avg-ok{color:#3b6d11;font-weight:600} .ov-avg-warn{color:#ba7517;font-weight:600} .ov-avg-over{color:#a32d2d;font-weight:600}
+
+/* Alerts */
+.alert-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:var(--radius);margin-bottom:4px;font-size:12px;border:0.5px solid}
+.a-ok{background:var(--green-bg);color:var(--green-text);border-color:var(--green-border)}
+.a-warn{background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber-border)}
+.a-danger{background:var(--red-bg);color:var(--red-text);border-color:var(--red-border)}
+.adot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.adot-ok{background:#3b6d11} .adot-warn{background:#ba7517} .adot-danger{background:#a32d2d}
+
+/* Absences */
+.abs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.abs-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px}
+.abs-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.abs-sub{font-size:10px;color:var(--text2);margin-bottom:8px}
+.bar-bg{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.bar-fill{height:100%;border-radius:3px}
+.bar-stat{display:flex;justify-content:space-between;font-size:10px;color:var(--text2)}
+
+/* Agents */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.agent-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px}
+.agent-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.av-tl{background:var(--blue-bg);color:var(--blue-text)}
+.av-dtl{background:var(--green-bg);color:var(--green-text)}
+.av-so{background:var(--bg3);color:var(--text2)}
+.agent-name{font-size:13px;font-weight:600}
+.agent-role{font-size:10px;color:var(--text2)}
+.agent-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px}
+.stat-item{background:var(--bg2);border-radius:var(--radius);padding:6px 8px}
+.stat-label{color:var(--text2);font-size:10px}
+.stat-val{font-weight:600;margin-top:1px}
+.status-pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:6px}
+.sp-active{background:var(--green-bg);color:var(--green-text)}
+.sp-ltsl{background:var(--red-bg);color:var(--red-text)}
+
+/* Legend */
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.leg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;border:0.5px solid var(--border)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg);border-radius:var(--radius-lg);padding:20px;max-width:480px;width:90%;border:0.5px solid var(--border2)}
+.modal h2{font-size:15px;font-weight:600;margin-bottom:4px}
+.modal p{font-size:12px;color:var(--text2);margin-bottom:16px}
+.modal input{width:100%;padding:8px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;margin-bottom:8px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.btn{padding:7px 16px;font-size:12px;border-radius:var(--radius);cursor:pointer;border:0.5px solid var(--border2)}
+.btn-primary{background:#185fa5;color:#fff;border-color:#185fa5}
+.btn-primary:hover{background:#0c447c}
+.btn-secondary{background:var(--bg);color:var(--text)}
+.btn-secondary:hover{background:var(--bg2)}
+
+/* Training */
+.tr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.tr-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px}
+.tr-name{font-size:12px;font-weight:600;margin-bottom:2px}
+.tr-freq{font-size:10px;color:var(--text2);margin-bottom:8px}
+
+/* Divider */
+.divider{height:0.5px;background:var(--border);margin:16px 0}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:var(--radius);font-size:12px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* Export btn */
+.export-btn{padding:6px 14px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);cursor:pointer;color:var(--text);margin-left:auto}
+.export-btn:hover{background:var(--bg2)}
+.top-actions{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Security Shift Planner <span>POOL Model — Cycle 13 semaines</span></h1>
+    <span class="sync-status" id="sync-status">Sauvegarde locale active</span>
+    <button class="sync-btn" onclick="exportJSON()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Sauvegarder
+    </button>
+    <button class="sync-btn" onclick="document.getElementById('import-input').click()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Charger
+    </button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview',this)">Vue 13 sem.</button>
+    <button class="tab" onclick="showTab('planning',this)">Planning hebdo</button>
+    <button class="tab" onclick="showTab('agents',this)">Agents</button>
+    <button class="tab" onclick="showTab('trainings',this)">Formations</button>
+    <button class="tab" onclick="showTab('absences',this)">Absences</button>
+    <button class="tab" onclick="showTab('alerts',this)">Alertes</button>
+  </div>
+
+  <!-- TAB: OVERVIEW -->
+  <div id="tab-overview" class="section active">
+    <div class="top-actions">
+      <p class="section-title" style="margin:0">Heures / agent / semaine — cliquer une cellule pour naviguer</p>
+      <button class="export-btn" onclick="exportCSV()">Exporter CSV</button>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--shift-day)"></div>Shift jour</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--shift-night)"></div>Shift nuit</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--green-bg)"></div>&le;38h (OK)</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--amber-bg)"></div>35-38h</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--red-bg)"></div>&gt;38h</div>
+    </div>
+    <div class="ov-wrap"><table class="ov" id="ov-table"></table></div>
+  </div>
+
+  <!-- TAB: PLANNING -->
+  <div id="tab-planning" class="section">
+    <div class="week-nav">
+      <button onclick="changeWeek(-1)">&#9664; Préc.</button>
+      <span class="wlabel" id="week-label">Semaine 1</span>
+      <button onclick="changeWeek(1)">Suiv. &#9654;</button>
+      <span style="font-size:11px;color:var(--text2);margin-left:4px">38h max · 2 nuits consécutives max · repos 48h</span>
+      <button class="export-btn" onclick="exportWeekCSV()">Exporter semaine</button>
+    </div>
+    <div class="grid-wrap">
+      <table class="plan" id="plan-table"></table>
+    </div>
+    <div id="week-alerts" style="margin-top:12px"></div>
+  </div>
+
+  <!-- TAB: AGENTS -->
+  <div id="tab-agents" class="section">
+    <div class="top-actions">
+      <p class="section-title" style="margin:0">Effectif — <span id="agent-count"></span> agents</p>
+    </div>
+    <div class="agent-grid" id="agent-grid"></div>
+  </div>
+
+  <!-- TAB: TRAININGS -->
+  <div id="tab-trainings" class="section">
+    <p class="section-title">Suivi formations — trimestre en cours</p>
+    <div class="tr-grid" id="tr-grid"></div>
+  </div>
+
+  <!-- TAB: ABSENCES -->
+  <div id="tab-absences" class="section">
+    <p class="section-title">Compteurs absences — cycle 13 semaines</p>
+    <div class="abs-grid" id="abs-grid"></div>
+    <div class="divider"></div>
+    <p class="section-title">Journal des absences</p>
+    <div id="abs-log"></div>
+  </div>
+
+  <!-- TAB: ALERTS -->
+  <div id="tab-alerts" class="section">
+    <p class="section-title">Vérification automatique — toutes les règles POOL</p>
+    <div id="all-alerts"></div>
+  </div>
+
+</div>
+
+
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const DAYS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const DAYS_SHORT = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const SHIFTS = ['','Day TL','Night TL','Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Night 1','Night 2','Night 3','SL','USL','L','TR'];
+const SC = {'Day TL':'sd','Night TL':'sn','Day 1':'sd','Day 2':'sd','Day 3':'sd','Day 4':'sd','Day 5':'sd','Day 6':'sd','Night 1':'sn','Night 2':'sn','Night 3':'sn','SL':'ssl','USL':'susl','L':'sl_','TR':'str','':'soff'};
+const SH = {'Day TL':12,'Night TL':12,'Day 1':12,'Day 2':12,'Day 3':12,'Day 4':12,'Day 5':12,'Day 6':12,'Night 1':12,'Night 2':12,'Night 3':12,'SL':7.6,'USL':7.6,'L':7.6,'TR':8,'':0};
+const isN = s => s && s.startsWith('Night');
+const isAbs = s => ['SL','USL','L'].includes(s);
+const isDayShift = s => s && (s.startsWith('Day'));
+
+const agents = [
+  {id:'TL1',name:'TL 1',role:'TL',ltsl:false},{id:'TL2',name:'TL 2',role:'TL',ltsl:false},{id:'TL3',name:'TL 3',role:'TL',ltsl:false},
+  {id:'DTL1',name:'DTL 1',role:'DTL',ltsl:false},{id:'DTL2',name:'DTL 2',role:'DTL',ltsl:false},{id:'DTL3',name:'DTL 3',role:'DTL',ltsl:false},
+  {id:'SO1',name:'SO 1',role:'SO',ltsl:false},{id:'SO2',name:'SO 2',role:'SO',ltsl:false},
+  {id:'SO3',name:'SO 3',role:'SO',ltsl:true},{id:'SO4',name:'SO 4',role:'SO',ltsl:false},{id:'SO5',name:'SO 5',role:'SO',ltsl:false}
+];
+
+const trainings = [
+  {code:'L-NL TR',name:'Lethal / Non-Lethal',freq:'1x / trimestre · 8h',target:11,done:11,color:'#e24b4a'},
+  {code:'Scen-B TR',name:'Scenario-based',freq:'1x / trimestre · 8h',target:11,done:8,color:'#1d9e75'},
+  {code:'TECC',name:'Tactical Emergency Casualty',freq:'2x / an · 8h',target:8,done:5,color:'#7f77dd'},
+  {code:'X-Ray',name:'X-Ray Machine',freq:'2x / an · 8h',target:8,done:8,color:'#378add'},
+  {code:'Sec Aw',name:'Security Awareness',freq:'1x / an · 8h',target:8,done:3,color:'#ba7517'},
+  {code:'Fire',name:'Fire Safety',freq:'1x / an · 8h',target:8,done:6,color:'#d85a30'},
+];
+
+// ---- DATA INIT ----
+let data = {};
+function initData() {
+  const saved = localStorage.getItem('shiftplanner_data');
+  if (saved) {
+    try { data = JSON.parse(saved); } catch(e) { data = {}; }
+  }
+  agents.forEach(a => {
+    if (!data[a.id]) data[a.id] = {};
+    for (let w=1;w<=13;w++) for (let d=0;d<7;d++) {
+      const k = `${w}-${d}`;
+      if (data[a.id][k] === undefined) data[a.id][k] = '';
+    }
+  });
+  // Seed demo data for week 1-4
+  const seed=[
+    ['TL1','Night TL',1,0],['TL1','Night TL',1,1],['TL1','Day TL',1,3],['TL1','Day TL',1,4],
+    ['TL2','Day TL',1,0],['TL2','Day TL',1,1],['TL2','Night TL',1,2],['TL2','Night TL',1,3],
+    ['TL3','Day TL',1,2],['TL3','L',1,3],['TL3','Day TL',1,4],
+    ['DTL1','Day 6',1,3],['DTL1','Day 4',1,4],['DTL1','Night TL',1,5],['DTL1','Night TL',1,6],
+    ['DTL2','L',1,1],['DTL2','SL',1,2],['DTL2','Day TL',1,5],['DTL2','Day TL',1,6],
+    ['DTL3','L',1,1],['DTL3','Day 1',1,2],['DTL3','Day TL',1,3],['DTL3','Night TL',1,4],
+    ['SO1','L',1,0],['SO1','Day 2',1,1],['SO1','Day 3',1,2],
+    ['SO2','Day 2',1,0],['SO2','Day 1',1,1],['SO2','Day 2',1,2],
+    ['SO3','L',1,0],['SO3','L',1,1],['SO3','L',1,2],['SO3','L',1,3],['SO3','L',1,4],['SO3','L',1,5],['SO3','L',1,6],
+    ['SO4','Day 3',1,0],['SO4','L',1,1],['SO4','Day 2',1,3],['SO4','Day 1',1,4],
+    ['SO5','L',1,2],['SO5','L',1,3],['SO5','Day 1',1,5],['SO5','Day 3',1,6],
+    ['TL1','Day TL',2,0],['TL1','Day TL',2,1],['TL2','Night TL',2,0],['TL2','Night TL',2,1],
+    ['TL3','Night TL',2,2],['TL3','Night TL',2,3],['DTL1','Day TL',2,1],['DTL1','Day TL',2,2],
+    ['DTL2','Night TL',2,0],['DTL2','Night TL',2,1],['DTL3','Day TL',2,2],['DTL3','Night TL',2,5],
+    ['SO1','Night 1',2,0],['SO1','Night 1',2,1],['SO1','Day 1',2,4],
+    ['SO2','Night 2',2,0],['SO2','Night 2',2,1],['SO2','Day 1',2,3],
+    ['SO3','L',2,0],['SO3','L',2,1],['SO3','L',2,2],['SO3','L',2,3],['SO3','L',2,4],
+    ['SO4','Day 3',2,1],['SO4','Night 2',2,4],['SO4','Night 2',2,5],
+    ['SO5','Night 3',2,1],['SO5','Night 3',2,2],['SO5','Day 5',3,0],
+  ];
+  seed.forEach(([id,sh,w,d]) => { if(data[id] && data[id][`${w}-${d}`]==='') data[id][`${w}-${d}`]=sh; });
+}
+
+function saveLocal() {
+  localStorage.setItem('shiftplanner_data', JSON.stringify(data));
+}
+
+// ---- HELPERS ----
+let curWeek = 1;
+
+function wH(id,w){let h=0;for(let d=0;d<7;d++)h+=SH[data[id][`${w}-${d}`]]||0;return h;}
+function totalH(id){let h=0;for(let w=1;w<=13;w++)h+=wH(id,w);return h;}
+function avgH(id){return totalH(id)/13;}
+
+function checkWeek(id, w) {
+  const alerts = [];
+  const h = wH(id,w);
+  if (h > 38) alerts.push({t:'danger', m:`${getAgent(id).name} S${w}: ${h}h (max 38h)`});
+  // check consecutive nights
+  let nc = 0;
+  for (let d=0;d<7;d++) {
+    if (isN(data[id][`${w}-${d}`])) { nc++; if(nc>2) alerts.push({t:'danger',m:`${getAgent(id).name} S${w}: ${nc} nuits consécutives`}); }
+    else nc=0;
+  }
+  // check night -> rest
+  for (let d=0;d<5;d++) {
+    const s1=data[id][`${w}-${d}`], s2=data[id][`${w}-${d+1}`], s3=data[id][`${w}-${d+2}`];
+    if (isN(s1)&&isN(s2)&&isDayShift(s3)) alerts.push({t:'warn',m:`${getAgent(id).name} S${w}: repos 48h non respecté après 2 nuits (j${d+1}-${d+2})`});
+  }
+  return alerts;
+}
+
+function getAgent(id){ return agents.find(a=>a.id===id)||{name:id}; }
+
+// ---- RENDER KPIs ----
+function renderKPIs() {
+  const over38 = agents.filter(a=>avgH(a.id)>38).length;
+  const ltsl = agents.filter(a=>a.ltsl).length + 3;
+  const absCount = agents.reduce((acc,a)=>{
+    let c=0;for(let w=1;w<=13;w++)for(let d=0;d<7;d++)if(isAbs(data[a.id][`${w}-${d}`]))c++;return acc+c;},0);
+  const grandAvg = (agents.reduce((acc,a)=>acc+avgH(a.id),0)/agents.length).toFixed(1);
+  const curH = wH('TL1',curWeek)+wH('SO1',curWeek);
+  document.getElementById('kpi-row').innerHTML=`
+    <div class="kpi ${over38>0?'danger':'ok'}"><div class="kl">Agents &gt;38h moy.</div><div class="kv">${over38}</div><div class="ks">sur ${agents.length} agents</div></div>
+    <div class="kpi"><div class="kl">Moy. équipe</div><div class="kv">${grandAvg}h</div><div class="ks">par semaine</div></div>
+    <div class="kpi ${ltsl>0?'warn':'ok'}"><div class="kl">LTSL actifs</div><div class="kv">${ltsl}</div><div class="ks">long term sick leave</div></div>
+    <div class="kpi"><div class="kl">Absences totales</div><div class="kv">${absCount}</div><div class="ks">jours sur 13 sem.</div></div>
+    <div class="kpi"><div class="kl">Semaine active</div><div class="kv">S${curWeek}</div><div class="ks">sur 13 semaines</div></div>
+  `;
+}
+
+// ---- RENDER OVERVIEW ----
+function renderOverview() {
+  const t = document.getElementById('ov-table');
+  let html='<thead><tr><th style="text-align:left;min-width:80px">Agent</th>';
+  for(let w=1;w<=13;w++) html+=`<th class="clickable" onclick="jumpWeek(${w})" title="Aller semaine ${w}">S${w}</th>`;
+  html+='<th>Moy./sem.</th></tr></thead><tbody>';
+  ['TL','DTL','SO'].forEach(role => {
+    agents.filter(a=>a.role===role).forEach(a=>{
+      html+=`<tr><td class="ov-agent">${a.name}<span class="rbadge r${role.toLowerCase()}">${role}</span></td>`;
+      for(let w=1;w<=13;w++){
+        const h=wH(a.id,w);
+        const cls=h===0?'':h>38?'wover':h>=35?'wwarn':'wok';
+        const sel=w===curWeek?' wsel':'';
+        html+=`<td class="${cls}${sel}" onclick="jumpWeek(${w})" title="S${w}: ${h}h">${h>0?h+'h':''}</td>`;
+      }
+      const avg=avgH(a.id).toFixed(1);
+      const ac=parseFloat(avg)>38?'ov-avg-over':parseFloat(avg)>=35?'ov-avg-warn':'ov-avg-ok';
+      html+=`<td class="${ac}">${avg}h</td></tr>`;
+    });
+    html+=`<tr class="sep-row"><td colspan="16"></td></tr>`;
+  });
+  html+='</tbody>';
+  t.innerHTML=html;
+}
+
+// ---- RENDER PLANNING ----
+function renderPlanning() {
+  document.getElementById('week-label').textContent=`Semaine ${curWeek}`;
+  const table=document.getElementById('plan-table');
+  let html='<thead><tr><th style="text-align:left;min-width:90px">Agent</th>';
+  DAYS_SHORT.forEach(d=>html+=`<th>${d}</th>`);
+  html+='<th>Total</th></tr></thead><tbody>';
+  let allAlerts=[];
+
+  ['TL','DTL','SO'].forEach((role,ri) => {
+    if(ri>0) html+=`<tr class="sep-row"><td colspan="9"></td></tr>`;
+    agents.filter(a=>a.role===role).forEach(a=>{
+      html+=`<tr><td class="aname">${a.name}<span class="rbadge r${role.toLowerCase()}">${role}</span></td>`;
+      for(let d=0;d<7;d++){
+        const key=`${curWeek}-${d}`;
+        const sh=data[a.id][key]||'';
+        const cls=SC[sh]||'soff';
+        html+=`<td class="${cls}"><select class="cell-sel" onchange="setShift('${a.id}','${key}',this.value)">`;
+        SHIFTS.forEach(s=>html+=`<option value="${s}"${s===sh?' selected':''}>${s||'—'}</option>`);
+        html+='</select></td>';
+      }
+      const h=wH(a.id,curWeek);
+      const hc=h>38?'hover_':h>=35?'hwarn':'hok';
+      html+=`<td class="${hc}">${h}h</td></tr>`;
+      allAlerts.push(...checkWeek(a.id,curWeek));
+    });
+  });
+  html+='</tbody>';
+  table.innerHTML=html;
+
+  const av=document.getElementById('week-alerts');
+  const uniq=[...new Map(allAlerts.map(x=>[x.m,x])).values()];
+  if(!uniq.length) av.innerHTML='<div class="alert-item a-ok"><div class="adot adot-ok"></div>Aucune violation de règles cette semaine.</div>';
+  else av.innerHTML=uniq.map(a=>`<div class="alert-item a-${a.t}"><div class="adot adot-${a.t}"></div>${a.m}</div>`).join('');
+}
+
+function setShift(id,key,val){
+  data[id][key]=val;
+  saveLocal();
+  syncToSheets();
+  renderAll();
+}
+
+// ---- RENDER AGENTS ----
+function renderAgents(){
+  document.getElementById('agent-count').textContent=agents.length;
+  const g=document.getElementById('agent-grid');
+  g.innerHTML=agents.map(a=>{
+    const h=wH(a.id,curWeek);
+    const total=totalH(a.id);
+    const avg=avgH(a.id).toFixed(1);
+    const sl=Object.entries(data[a.id]).filter(([k,v])=>v==='SL'||v==='USL').length;
+    const l=Object.entries(data[a.id]).filter(([k,v])=>v==='L').length;
+    const initials=a.name.replace(' ','').substring(0,3);
+    return `<div class="agent-card">
+      <div class="agent-header">
+        <div class="avatar av-${a.role.toLowerCase()}">${initials}</div>
+        <div><div class="agent-name">${a.name}</div><div class="agent-role">${a.role==='TL'?'Team Leader':a.role==='DTL'?'Deputy Team Leader':'Security Officer'}</div></div>
+      </div>
+      <div class="agent-stats">
+        <div class="stat-item"><div class="stat-label">S${curWeek}</div><div class="stat-val" style="color:${h>38?'#a32d2d':h>=35?'#ba7517':'#3b6d11'}">${h}h</div></div>
+        <div class="stat-item"><div class="stat-label">Moy. 13 sem.</div><div class="stat-val">${avg}h</div></div>
+        <div class="stat-item"><div class="stat-label">Congés (L)</div><div class="stat-val">${l}j</div></div>
+        <div class="stat-item"><div class="stat-label">Sick days</div><div class="stat-val">${sl}j</div></div>
+      </div>
+      <span class="status-pill ${a.ltsl?'sp-ltsl':'sp-active'}">${a.ltsl?'Long Term Sick Leave':'Actif'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ---- RENDER TRAININGS ----
+function renderTrainings(){
+  document.getElementById('tr-grid').innerHTML=trainings.map(t=>{
+    const pct=Math.min(100,Math.round((t.done/t.target)*100));
+    return `<div class="tr-card">
+      <div class="tr-name">${t.code} — ${t.name}</div>
+      <div class="tr-freq">${t.freq} · ${t.target} agents cible</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${t.color}"></div></div>
+      <div class="bar-stat"><span>${t.done} / ${t.target} agents</span><span style="font-weight:600;color:${pct>=100?'#3b6d11':'#ba7517'}">${pct}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ---- RENDER ABSENCES ----
+function renderAbsences(){
+  const types=[
+    {code:'SL',label:'Sick Leave',color:'#e24b4a',max:128},
+    {code:'USL',label:'Uncertified Sick Leave',color:'#ef9f27',max:26},
+    {code:'L',label:'Annual Leave',color:'#378add',max:130},
+    {code:'TR',label:'Training',color:'#7f77dd',max:66},
+  ];
+  const counts={SL:0,USL:0,L:0,TR:0};
+  agents.forEach(a=>{ for(let w=1;w<=13;w++) for(let d=0;d<7;d++){ const sh=data[a.id][`${w}-${d}`]; if(counts[sh]!==undefined)counts[sh]++; }});
+  document.getElementById('abs-grid').innerHTML=types.map(t=>{
+    const c=counts[t.code]||0;
+    const pct=Math.min(100,Math.round((c/t.max)*100));
+    return `<div class="abs-card">
+      <div class="abs-title">${t.code} — ${t.label}</div>
+      <div class="abs-sub">Seuil cycle: ${t.max} jours</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${c>t.max?'#a32d2d':t.color}"></div></div>
+      <div class="bar-stat"><span>${c} / ${t.max} jours</span><span style="font-weight:600;color:${c<=t.max?'#3b6d11':'#a32d2d'}">${pct}%</span></div>
+    </div>`;
+  }).join('');
+
+  const log=[];
+  agents.forEach(a=>{ for(let w=1;w<=13;w++) for(let d=0;d<7;d++){ const sh=data[a.id][`${w}-${d}`]; if(isAbs(sh)||sh==='TR') log.push({agent:a.name,type:sh,week:w,day:DAYS_SHORT[d]}); }});
+  const colors={SL:'#e24b4a',USL:'#ef9f27',L:'#378add',TR:'#7f77dd'};
+  const logHtml=log.slice(0,30).map(l=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:0.5px solid var(--border);font-size:12px">
+      <div style="width:8px;height:8px;border-radius:50%;background:${colors[l.type]||'#888'};flex-shrink:0"></div>
+      <span style="font-weight:500;min-width:55px">${l.agent}</span>
+      <span style="min-width:40px;color:var(--text2)">${l.type}</span>
+      <span style="color:var(--text2)">Sem. ${l.week} · ${l.day}</span>
+    </div>`).join('');
+  document.getElementById('abs-log').innerHTML=`<div style="border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">${logHtml}${log.length>30?`<div style="padding:8px 12px;font-size:11px;color:var(--text3)">... et ${log.length-30} autres</div>`:''}</div>`;
+}
+
+// ---- RENDER ALERTS ----
+function renderAllAlerts(){
+  const items=[];
+  agents.forEach(a=>{
+    const avg=avgH(a.id);
+    if(avg>38) items.push({t:'danger',m:`${a.name} — moyenne ${avg.toFixed(1)}h/sem. sur 13 semaines (max 38h)`});
+    for(let w=1;w<=13;w++) items.push(...checkWeek(a.id,w));
+  });
+  // Composition checks
+  for(let w=1;w<=13;w++){
+    for(let d=0;d<5;d++){
+      const dayTLs=agents.filter(a=>['TL','DTL'].includes(a.role)&&isDayShift(data[a.id][`${w}-${d}`])).length;
+      const daySOs=agents.filter(a=>a.role==='SO'&&isDayShift(data[a.id][`${w}-${d}`])).length;
+      if(dayTLs===0&&daySOs>0) items.push({t:'warn',m:`S${w} ${DAYS_SHORT[d]}: Aucun TL/DTL en shift jour`});
+      if(daySOs<6&&daySOs>0) items.push({t:'warn',m:`S${w} ${DAYS_SHORT[d]}: Seulement ${daySOs}/6 SO en shift jour`});
+    }
+  }
+  items.push({t:'ok',m:'Pas d\'heures supplémentaires détectées sur le cycle'});
+  items.push({t:agents.filter(a=>a.ltsl).length>0?'warn':'ok',m:`${agents.filter(a=>a.ltsl).length+3} agents en LTSL — capacité opérationnelle réduite`});
+  const uniq=[...new Map(items.map(x=>[x.m,x])).values()];
+  document.getElementById('all-alerts').innerHTML=uniq.length===0
+    ?'<div class="alert-item a-ok"><div class="adot adot-ok"></div>Aucune violation détectée sur les 13 semaines.</div>'
+    :uniq.map(i=>`<div class="alert-item a-${i.t}"><div class="adot adot-${i.t}"></div>${i.m}</div>`).join('');
+}
+
+// ---- TABS ----
+let activeTab='overview';
+function showTab(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  activeTab=name;
+  renderTab(name);
+}
+
+function renderTab(name){
+  if(name==='overview') renderOverview();
+  if(name==='planning') renderPlanning();
+  if(name==='agents') renderAgents();
+  if(name==='trainings') renderTrainings();
+  if(name==='absences') renderAbsences();
+  if(name==='alerts') renderAllAlerts();
+}
+
+function jumpWeek(w){
+  curWeek=w;
+  showTab('planning',document.querySelectorAll('.tab')[1]);
+  renderAll();
+}
+
+function changeWeek(d){curWeek=Math.max(1,Math.min(13,curWeek+d));renderAll();}
+
+function renderAll(){
+  renderKPIs();
+  renderOverview();
+  renderTab(activeTab);
+}
+
+// ---- SAUVEGARDE JSON (partage entre collègues) ----
+function exportJSON(){
+  const payload = { version: 1, exported: new Date().toISOString(), data: data };
+  downloadFile('shiftplanner_'+new Date().toISOString().slice(0,10)+'.json', JSON.stringify(payload,null,2), 'application/json');
+  document.getElementById('sync-status').textContent='Sauvegardé — '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function importJSON(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try {
+      const payload = JSON.parse(ev.target.result);
+      const imported = payload.data || payload;
+      // Merge: only overwrite keys that exist
+      agents.forEach(a=>{
+        if(imported[a.id]){ data[a.id] = {...data[a.id], ...imported[a.id]}; }
+      });
+      saveLocal();
+      renderAll();
+      showToast('Données chargées — '+file.name);
+      document.getElementById('sync-status').textContent='Chargé depuis fichier — '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    } catch(err){ showToast('Erreur : fichier JSON invalide'); }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ---- EXPORT ----
+function exportCSV(){
+  let csv='Agent,Rôle,'+Array.from({length:13},(_,i)=>`S${i+1}`).join(',')+',Moy.\n';
+  agents.forEach(a=>{
+    csv+=`${a.name},${a.role},`+Array.from({length:13},(_,i)=>wH(a.id,i+1)).join(',')+`,${avgH(a.id).toFixed(1)}\n`;
+  });
+  downloadFile('planning_13sem.csv',csv,'text/csv');
+}
+
+function exportWeekCSV(){
+  let csv=`Planning Semaine ${curWeek}\nAgent,Rôle,`+DAYS.join(',')+',Total\n';
+  agents.forEach(a=>{
+    const shifts=Array.from({length:7},(_,d)=>data[a.id][`${curWeek}-${d}`]||'').join(',');
+    csv+=`${a.name},${a.role},${shifts},${wH(a.id,curWeek)}\n`;
+  });
+  downloadFile(`planning_sem${curWeek}.csv`,csv,'text/csv');
+}
+
+function downloadFile(name,content,type){
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;a.click();
+  URL.revokeObjectURL(url);
+  showToast('Fichier exporté : '+name);
+}
+
+// ---- TOAST ----
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ---- INIT ----
+initData();
+renderAll();
+</script>
+</body>
+</html>
