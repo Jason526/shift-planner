@@ -930,7 +930,7 @@ function checkAll(id){
   for(let w=1;w<=13;w++){
     const h=wH(id,w);
     if(h>48) items.push({t:'danger',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h — CRITICAL BREACH 48h`});
-    else if(h>38) items.push({t:'warn',cat:'38h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h cette week (max 38h)`});
+    else if(h>38) items.push({t:'warn',cat:'38h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h this week (max 38h)`});
     // 2 nights consecutive max
     let nc=0;
     for(let d=0;d<7;d++){
@@ -2602,9 +2602,9 @@ function updateAllTotals(){
     <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;">
       <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);margin-bottom:10px;">🎓 Trainings tab</div>
       <table style="font-size:11px;width:100%;border-collapse:collapse;margin-bottom:10px;">
-        <tr style="border-bottom:0.5px solid var(--border);"><th style="text-align:left;padding:5px 8px;color:var(--text2)">Training</th><th style="text-align:left;padding:5px 8px;color:var(--text2)">Frequency</th><th style="text-align:left;padding:5px 8px;color:var(--text2)">Cible</th></tr>
-        <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">L-NL TR (Lethal/Non-Lethal)</td><td style="padding:5px 8px">1×/trimestre</td><td style="padding:5px 8px">Everyone (11 agents)</td></tr>
-        <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">Scen-B TR (Scenario-based)</td><td style="padding:5px 8px">1×/trimestre</td><td style="padding:5px 8px">Everyone (11 agents)</td></tr>
+        <tr style="border-bottom:0.5px solid var(--border);"><th style="text-align:left;padding:5px 8px;color:var(--text2)">Training</th><th style="text-align:left;padding:5px 8px;color:var(--text2)">Frequency</th><th style="text-align:left;padding:5px 8px;color:var(--text2)">Target</th></tr>
+        <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">L-NL TR (Lethal/Non-Lethal)</td><td style="padding:5px 8px">1×/quarter</td><td style="padding:5px 8px">Everyone (11 agents)</td></tr>
+        <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">Scen-B TR (Scenario-based)</td><td style="padding:5px 8px">1×/quarter</td><td style="padding:5px 8px">Everyone (11 agents)</td></tr>
         <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">TECC (Emergency Casualty)</td><td style="padding:5px 8px">2×/an</td><td style="padding:5px 8px">8 agents per session</td></tr>
         <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">X-Ray (Machine X-Ray)</td><td style="padding:5px 8px">2×/an</td><td style="padding:5px 8px">8 agents per session</td></tr>
         <tr style="border-bottom:0.5px solid var(--border2);"><td style="padding:5px 8px">Sec Aw (Security Awareness)</td><td style="padding:5px 8px">1×/an</td><td style="padding:5px 8px">8 agents per session</td></tr>
