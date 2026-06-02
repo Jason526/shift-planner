@@ -2260,7 +2260,7 @@ function renderKPIDash(){
     <div class="kpi-card ${parseFloat(grandAvg)>38?'kpi-danger':parseFloat(grandAvg)>=36?'kpi-warn':'kpi-ok'}">
       <div class="kc-label">Avg. hours / week</div>
       <div class="kc-val">${(+grandAvg).toFixed(1)}h</div>
-      <div class="kc-sub">Cible : 48h max</div>
+      <div class="kc-sub">Target : 48h max</div>
       <div class="kc-bar"><div class="kc-fill" style="width:${Math.min(100,parseFloat(grandAvg)/38*100).toFixed(0)}%;background:${parseFloat(grandAvg)>38?'#e24b4a':'#639922'}"></div></div>
     </div>
     <div class="kpi-card ${viols>0?'kpi-danger':'kpi-ok'}">
