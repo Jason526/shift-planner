@@ -3029,7 +3029,7 @@ function renderFatigueKPI(){
   el.innerHTML=kpiAgents.map(a=>{
     const f=fatigueScore(a.id);
     const color=f.score>=70?'#e24b4a':f.score>=40?'#d97706':'#639922';
-    const label=f.score>=70?'Élevé':f.score>=40?'Modéré':'Faible';
+    const label=f.score>=70?'Hight':f.score>=40?'Medium':'Low';
     return `<div class="kpi-card ${f.score>=70?'kpi-danger':f.score>=40?'kpi-warn':'kpi-ok'}">
       <div class="kc-label" style="font-size:10px">${a.name}</div>
       <div class="kc-val" style="font-size:14px;color:${color}">${label}</div>
