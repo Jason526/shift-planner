@@ -2121,14 +2121,14 @@ function trainingEquity(){
 function renderKPIs(){
   const agents=_getTeamAgents();
   const teamLabel=document.getElementById('kpi-team-label');if(teamLabel)teamLabel.textContent=_teamState.filter==='all'?'Toutes les équipes':'Team '+_teamState.filter;
-  const over38=agents.filter(a=>avgH(a.id)>38).length;
+  const over48=agents.filter(a=>avgH(a.id)>48).length;
   const ltsl=agents.filter(a=>a.ltsl).length+3;
   const activeForKPI=agents.filter(a=>!a.ltsl);
   const grandAvg=(activeForKPI.reduce((acc,a)=>acc+avgH(a.id),0)/activeForKPI.length).toFixed(1);
   const viols=totalViolations();
   const cov=coverageRate();
   document.getElementById('kpi-row').innerHTML=`
-    <div class="kpi ${over38>0?'danger':'ok'}"><div class="kl">Agents >48h avg.</div><div class="kv">${over38}</div><div class="ks">of ${agents.length}</div></div>
+    <div class="kpi ${over48>0?'danger':'ok'}"><div class="kl">Agents >48h avg.</div><div class="kv">${over48}</div><div class="ks">of ${agents.length}</div></div>
     <div class="kpi"><div class="kl">Team avg.</div><div class="kv">${(+grandAvg).toFixed(1)}h</div><div class="ks">/week</div></div>
     <div class="kpi ${viols>0?'danger':'ok'}"><div class="kl">Violations</div><div class="kv">${viols}</div><div class="ks">règles POOL</div></div>
     <div class="kpi ${cov<90?'warn':'ok'}"><div class="kl">Coverage</div><div class="kv">${cov}%</div><div class="ks">of shifts</div></div>
