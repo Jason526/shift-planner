@@ -2505,14 +2505,14 @@ function renderTrainings(){
       <div class="tr-name">${t.code} — ${t.name}</div>
       <div class="tr-freq">${t.freq} · 8h · target ${t.target} agents</div>
       <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${t.color}"></div></div>
-      <div class="bar-stat" style="margin-bottom:6px"><span>${t.done}/${t.target} agents formés</span><span style="font-weight:600;color:${pct>=100?'#3b6d11':'#ba7517'}">${pct}%</span></div>
-      <div style="font-size:9px;color:var(--text2);margin-bottom:3px">Semaines planifiées :</div>
+      <div class="bar-stat" style="margin-bottom:6px"><span>${t.done}/${t.target} trained agents</span><span style="font-weight:600;color:${pct>=100?'#3b6d11':'#ba7517'}">${pct}%</span></div>
+      <div style="font-size:9px;color:var(--text2);margin-bottom:3px">Scheduled Weeks:</div>
       <div class="tr-week-grid">${weekDots}</div>
     </div>`;
   }).join('');
 
   // Training plan table
-  let html='<thead><tr><th style="text-align:left">Semaine</th>';
+  let html='<thead><tr><th style="text-align:left">Week</th>';
   trainings.forEach(t=>html+=`<th style="background:${t.color};color:#fff">${t.code}</th>`);
   html+='</tr></thead><tbody>';
   for(let w=1;w<=13;w++){
