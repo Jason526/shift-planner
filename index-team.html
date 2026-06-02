@@ -2006,27 +2006,27 @@ function checkAll(id){
   const a=getAgent(id);
   // 48h average
   const avg=avgH(id);
-  if(avg>38) items.push({t:'danger',cat:'48h',m:`${a.name}: moyenne ${avg.toFixed(1)}h/sem. (max 48h)`});
+  if(avg>38) items.push({t:'danger',cat:'48h',m:`${a.name}: average ${avg.toFixed(1)}h/wk (Max 48h)`});
   for(let w=1;w<=13;w++){
     const h=wH(id,w);
-    if(h>48) items.push({t:'danger',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h — DÉPASSEMENT CRITIQUE 48h`});
-    else if(h>38) items.push({t:'warn',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h cette week (max 48h)`});
+    if(h>48) items.push({t:'danger',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h — CRITICAL 48h EXCEEDANCE`});
+    else if(h>38) items.push({t:'warn',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h this Wk (Max 48h)`});
     // 2 nights consecutive max
     let nc=0;
     for(let d=0;d<7;d++){
       const s=data[id]?data[id][`${w}-${d}`]||'':'';
-      if(isN(s)){nc++;if(nc>2)items.push({t:'danger',cat:'nuits',m:`${a.name} S${w}: ${nc} nuits consécutives (max 2)`});}
+      if(isN(s)){nc++;if(nc>2)items.push({t:'danger',cat:'nuits',m:`${a.name} S${w}: ${nc} consecutive nights (Max 2)`});}
       else nc=0;
     }
     // 48h rest after 2 nights
     for(let d=0;d<5;d++){
       const s1=(data[id]?data[id][`${w}-${d}`]:''),s2=data[id][`${w}-${d+1}`],s3=data[id][`${w}-${d+2}`];
-      if(isN(s1)&&isN(s2)&&isDay(s3)) items.push({t:'warn',cat:'repos',m:`${a.name} S${w} j${d+3}: repos 48h non respecté après 2 nuits`});
+      if(isN(s1)&&isN(s2)&&isDay(s3)) items.push({t:'warn',cat:'repos',m:`${a.name} S${w} j${d+3}:48h Rest Violation After 2 Nights`});
     }
     // USL max 2 consecutive
     let uc=0;
     for(let d=0;d<7;d++){
-      if(data[id][`${w}-${d}`]==='USL'){uc++;if(uc>2)items.push({t:'danger',cat:'USL',m:`${a.name} S${w}: ${uc} USL consécutifs (max 2)`});}
+      if(data[id][`${w}-${d}`]==='USL'){uc++;if(uc>2)items.push({t:'danger',cat:'USL',m:`${a.name} S${w}: ${uc} Consecutive USL (Max 2)`});}
       else uc=0;
     }
   }
@@ -2034,12 +2034,12 @@ function checkAll(id){
   const uslTotal=absCount(id,'USL');
   if(uslTotal>6) items.push({t:'warn',cat:'USL',m:`${a.name}: ${uslTotal} USL over the cycle (ref. 6/year)`});
   // Annual leave max 4 weeks consecutive = 28 days
-  if(maxConsecAbs(id,'L')>28) items.push({t:'warn',cat:'congés',m:`${a.name}: congés consécutifs > 4 weeks`});
+  if(maxConsecAbs(id,'L')>28) items.push({t:'warn',cat:'congés',m:`${a.name}: consecutive leave > 4 weeks`});
   // No absence > 30 days consecutive (eliminates allowances)
-  if(maxConsecAbsAny(id)>=30) items.push({t:'danger',cat:'30j',m:`${a.name}: absence consécutive ≥ 30 jours — risque perte d'indemnités`});
+  if(maxConsecAbsAny(id)>=30) items.push({t:'danger',cat:'30j',m:`${a.name}: Consecutive Absence ≥ 30 Days — Risk of Benefit Loss`});
   // Max consecutive working days
   const mcd=maxConsecWork(id);
-  if(mcd>6) items.push({t:'warn',cat:'consec',m:`${a.name}: ${mcd} jours travaillés consécutifs`});
+  if(mcd>6) items.push({t:'warn',cat:'consec',m:`${a.name}: ${mcd} Consecutive Work Days`});
   return items;
 }
 
