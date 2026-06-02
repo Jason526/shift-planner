@@ -2336,22 +2336,22 @@ function renderFairness(){
 
   document.getElementById('fairness-kpis').innerHTML=`
     <div class="kpi-card">
-      <div class="kc-label">Écart-type heures/sem.</div>
+      <div class="kc-label">Std Dev Hours/Wk.</div>
       <div class="kc-val">${(+sdH).toFixed(1)}h</div>
-      <div class="kc-sub">${parseFloat(sdH)<3?'Bonne équité':'Écart notable'}</div>
+      <div class="kc-sub">${parseFloat(sdH)<3?'Good Equity':'Notable Gap'}</div>
     </div>
     <div class="kpi-card">
-      <div class="kc-label">Écart-type nuits</div>
+      <div class="kc-label">Std Dev Nights</div>
       <div class="kc-val">${sdN}</div>
-      <div class="kc-sub">sessions nuit / agent</div>
+      <div class="kc-sub">Night Sessions / Agent</div>
     </div>
     <div class="kpi-card">
       <div class="kc-label">Fairness formation</div>
       <div class="kc-val">${sdTR}</div>
-      <div class="kc-sub">écart-type TR/agent</div>
+      <div class="kc-sub">Std Dev TR/Agent</div>
     </div>
     <div class="kpi-card ${maxNC>6?'kpi-warn':'kpi-ok'}">
-      <div class="kc-label">Max jours consécutifs</div>
+      <div class="kc-label">Max. Consecutive Days</div>
       <div class="kc-val">${maxNC}</div>
       <div class="kc-sub">max on one agent</div>
     </div>
@@ -2374,8 +2374,8 @@ function renderFairness(){
         <div class="fair-row"><span class="fair-label">Avg. h/wk.</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${(parseFloat(h)/38*100).toFixed(0)}%;background:${parseFloat(h)>38?'#e24b4a':'#639922'}"></div></div><span class="fair-val">${(+h).toFixed(1)}h</span></div>
         <div class="fair-row"><span class="fair-label">Nights</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${(n/maxN*100).toFixed(0)}%;background:#378add"></div></div><span class="fair-val">${n}</span></div>
         <div class="fair-row"><span class="fair-label">Trainings</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${(tr/maxT*100).toFixed(0)}%;background:#7f77dd"></div></div><span class="fair-val">${tr}j</span></div>
-        <div class="fair-row"><span class="fair-label">Max consécutif</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${(mc/maxC*100).toFixed(0)}%;background:${mc>6?'#ef9f27':'#1d9e75'}"></div></div><span class="fair-val">${mc}j</span></div>
-        <div class="fair-row"><span class="fair-label">SL (maladie)</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${Math.min(100,sl*10)}%;background:#e24b4a"></div></div><span class="fair-val">${sl}j</span></div>
+        <div class="fair-row"><span class="fair-label">Max. Consecutive</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${(mc/maxC*100).toFixed(0)}%;background:${mc>6?'#ef9f27':'#1d9e75'}"></div></div><span class="fair-val">${mc}j</span></div>
+        <div class="fair-row"><span class="fair-label">SL (sickness)</span><div class="fair-bar-bg"><div class="fair-bar-fill" style="width:${Math.min(100,sl*10)}%;background:#e24b4a"></div></div><span class="fair-val">${sl}j</span></div>
       </div>
     </div>`;
   }).join('');
