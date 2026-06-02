@@ -3224,21 +3224,21 @@ function renderSlackTimeKPI(fa){
     <div class="kpi-card ${slackPct>30?'kpi-warn':'kpi-ok'}">
       <div class="kc-label">Slack Time total</div>
       <div class="kc-val">${(+slack).toFixed(1)}h</div>
-      <div class="kc-sub">cumul heures < 48h (target 48h)</div>
+      <div class="kc-sub">Total Hours < 48h (Target: 48h)</div>
       <div class="kc-bar"><div class="kc-fill" style="width:${Math.min(100,slackPct)}%;background:${slackPct>30?'#ef9f27':'#639922'}"></div></div>
     </div>
     <div class="kpi-card">
-      <div class="kc-label">Réserve avg. / agent</div>
+      <div class="kc-label">Avg. Reserve / agent</div>
       <div class="kc-val">${(+avgAgent).toFixed(1)}h</div>
       <div class="kc-sub">over 13 weeks</div>
     </div>
     <div class="kpi-card">
-      <div class="kc-label">Réserve avg. / week</div>
+      <div class="kc-label">Avg. Reserve / week</div>
       <div class="kc-val">${(+avgWeek).toFixed(1)}h</div>
       <div class="kc-sub">per agent / week</div>
     </div>
     <div class="kpi-card ${minW===0?'kpi-danger':'kpi-ok'}">
-      <div class="kc-label">Réserve min (pire week)</div>
+      <div class="kc-label">Min. Buffer (Worst Wk.)</div>
       <div class="kc-val">${(+minW).toFixed(1)}h</div>
       <div class="kc-sub">max: ${(+maxW).toFixed(1)}h</div>
     </div>`;
