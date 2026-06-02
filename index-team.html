@@ -362,7 +362,7 @@ table.plan tr:last-child td{border-bottom:none}
 <!-- TAB: AGENTS -->
 <div id="tab-agents" class="section">
   <div class="top-actions" style="flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-    <p class="stitle" style="margin:0">Workforce — <span id="agent-count"></span> agents</p>
+    <p class="stitle" style="margin:0">Headcount — <span id="agent-count"></span> agents</p>
     <button class="export-btn" onclick="showAddAgentModal()" style="display:flex;align-items:center;gap:5px;">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add an agent
@@ -380,10 +380,6 @@ table.plan tr:last-child td{border-bottom:none}
     </select>
     <select id="agents-filter-agent" onchange="renderAgents()" style="padding:4px 8px;font-size:11px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);display:none;"></select>
   </div>
-  <div style="margin-bottom:12px;background:var(--bg2);border-radius:var(--radius-lg);padding:12px;border:0.5px solid var(--border);">
-    <p class="stitle" style="margin:0 0 8px 0;">Manage operational teams</p>
-    <div id="team-manager"></div>
-  </div>
   <div class="agent-grid" id="agent-grid"></div>
 </div>
 <div id="add-agent-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:center;justify-content:center;">
@@ -391,22 +387,14 @@ table.plan tr:last-child td{border-bottom:none}
     <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Add an agent</div>
     <div style="margin-bottom:10px;">
       <label style="font-size:10px;color:var(--text2);display:block;margin-bottom:4px;">Agent name</label>
-      <input id="new-agent-name" type="text" placeholder="e.g. SO 28" style="width:100%;padding:6px 9px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);">
+      <input id="new-agent-name" type="text" placeholder="ex: SO 28" style="width:100%;padding:6px 9px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);">
     </div>
-    <div style="margin-bottom:10px;">
-      <label style="font-size:10px;color:var(--text2);display:block;margin-bottom:4px;">Role</label>
+    <div style="margin-bottom:16px;">
+      <label style="font-size:10px;color:var(--text2);display:block;margin-bottom:4px;">Team</label>
       <select id="new-agent-role" style="width:100%;padding:6px 9px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);">
         <option value="TL">Team Leader (TL)</option>
         <option value="DTL">Deputy Team Leader (DTL)</option>
         <option value="SO" selected>Security Officer (SO)</option>
-      </select>
-    </div>
-    <div style="margin-bottom:16px;">
-      <label style="font-size:10px;color:var(--text2);display:block;margin-bottom:4px;">Operational team</label>
-      <select id="new-agent-team" style="width:100%;padding:6px 9px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);">
-        <option value="Alpha">Alpha</option>
-        <option value="Bravo">Bravo</option>
-        <option value="Charlie">Charlie</option>
       </select>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
