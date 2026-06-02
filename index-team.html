@@ -2271,7 +2271,7 @@ function renderKPIDash(){
     <div class="kpi-card ${cov<90?'kpi-warn':cov<80?'kpi-danger':'kpi-ok'}">
       <div class="kc-label">Coverage rate</div>
       <div class="kc-val">${cov}%</div>
-      <div class="kc-sub">Postes couverts / requis</div>
+      <div class="kc-sub">Covered / Required Positions </div>
       <div class="kc-bar"><div class="kc-fill" style="width:${cov}%;background:${cov>=90?'#639922':cov>=80?'#ef9f27':'#e24b4a'}"></div></div>
     </div>
     <div class="kpi-card">
@@ -2283,25 +2283,25 @@ function renderKPIDash(){
 
   document.getElementById('kpi-perf').innerHTML=`
     <div class="kpi-card kpi-ok">
-      <div class="kc-label">Dépassement 48h/sem.</div>
+      <div class="kc-label">48h/week Overtime Exceedance </div>
       <div class="kc-val">${ot===0?'✓':ot+'h'}</div>
       <div class="kc-sub">${ot===0?'No overtime':ot+'h cumulated over the cycle'}</div>
     </div>
     <div class="kpi-card">
-      <div class="kc-label">Cumul heures < 48h</div>
+      <div class="kc-label">Total Hours < 48h </div>
       <div class="kc-val">${(+slack).toFixed(1)}h</div>
       <div class="kc-sub">hours under 48h cumulated over the cycle</div>
     </div>
     <div class="kpi-card ${abs<80?'kpi-warn':'kpi-ok'}">
       <div class="kc-label">Absorption absences</div>
       <div class="kc-val">${abs}%</div>
-      <div class="kc-sub">absences couvertes</div>
+      <div class="kc-sub">Covered Absences </div>
       <div class="kc-bar"><div class="kc-fill" style="width:${abs}%;background:${abs>=80?'#639922':'#ef9f27'}"></div></div>
     </div>
     <div class="kpi-card ${minMargin<0?'kpi-danger':minMargin<2?'kpi-warn':'kpi-ok'}">
       <div class="kc-label">Marge staffing min.</div>
       <div class="kc-val">${minMargin>0?'+':''}${minMargin}</div>
-      <div class="kc-sub">SO vs requis (pire sem.)</div>
+      <div class="kc-sub">SO vs. Required (Worst Week)</div>
     </div>
   `;
 
