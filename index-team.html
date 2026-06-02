@@ -3033,7 +3033,7 @@ function renderFatigueKPI(){
     return `<div class="kpi-card ${f.score>=70?'kpi-danger':f.score>=40?'kpi-warn':'kpi-ok'}">
       <div class="kc-label" style="font-size:10px">${a.name}</div>
       <div class="kc-val" style="font-size:14px;color:${color}">${label}</div>
-      <div class="kc-sub">${f.totalNights} nuits · max ${f.maxConsecNight} consec · ${f.weeksOver36} sem >36h</div>
+      <div class="kc-sub">${f.totalNights} nights · max ${f.maxConsecNight} consec · ${f.weeksOver36} wks >36h</div>
       <div class="kc-bar"><div class="kc-fill" style="width:${f.score}%;background:${color}"></div></div>
     </div>`;
   }).join('');
