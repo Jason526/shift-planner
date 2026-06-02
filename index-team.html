@@ -2590,8 +2590,8 @@ function renderAllAlerts(){
   const dangers=uniq.filter(x=>x.t==='danger').length;
   const warns=uniq.filter(x=>x.t==='warn').length;
   document.getElementById('alert-summary').innerHTML=`
-    <span class="tag tag-danger">${dangers} critiques</span>
-    <span class="tag tag-warn">${warns} avertissements</span>
+    <span class="tag tag-danger">${dangers} criticals </span>
+    <span class="tag tag-warn">${warns} warnings</span>
     <span class="tag tag-ok">${uniq.filter(x=>x.t==='ok').length} OK</span>
   `;
   document.getElementById('all-alerts').innerHTML=uniq.length===0
