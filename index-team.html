@@ -2403,22 +2403,22 @@ function runScenario(){
   document.getElementById('sc-result').innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
       <div style="background:var(--bg2);border-radius:var(--radius);padding:10px">
-        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Impact couverture</div>
+        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Coverage impact</div>
         <div style="font-size:18px;font-weight:600;color:${covImpact<baseCov?'#a32d2d':'#3b6d11'}">${covImpact}%</div>
         <div style="font-size:10px;color:var(--text3)">baseline: ${baseCov}% → ${covImpact>baseCov?'+':''}${covImpact-baseCov}pts</div>
       </div>
       <div style="background:var(--bg2);border-radius:var(--radius);padding:10px">
-        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Agents supplémentaires malades</div>
+        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Additional Sick Agents</div>
         <div style="font-size:18px;font-weight:600;color:${addSickAgents>0?'#ba7517':'#3b6d11'}">${addSickAgents}</div>
         <div style="font-size:10px;color:var(--text3)">${sickRate}% du pool</div>
       </div>
       <div style="background:var(--bg2);border-radius:var(--radius);padding:10px">
-        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Violations estimées</div>
+        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Estimated Violations</div>
         <div style="font-size:18px;font-weight:600;color:${newViol>baseViol?'#a32d2d':'#3b6d11'}">${newViol}</div>
         <div style="font-size:10px;color:var(--text3)">baseline: ${baseViol}</div>
       </div>
       <div style="background:var(--bg2);border-radius:var(--radius);padding:10px">
-        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Charge formation (+)</div>
+        <div style="font-size:10px;color:var(--text2);margin-bottom:4px">Training Load (+)</div>
         <div style="font-size:18px;font-weight:600">${(+trHoursImpact).toFixed(1)}h</div>
         <div style="font-size:10px;color:var(--text3)">${extraTR} sessions × 8h</div>
       </div>
