@@ -1994,11 +1994,11 @@ function checkAll(id){
   const a=getAgent(id);
   // 48h average
   const avg=avgH(id);
-  if(avg>38) items.push({t:'danger',cat:'48h',m:`${a.name}: average ${avg.toFixed(1)}h/wk (Max 48h)`});
+  if(avg>48) items.push({t:'danger',cat:'48h',m:`${a.name}: average ${avg.toFixed(1)}h/wk (Max 48h)`});
   for(let w=1;w<=13;w++){
     const h=wH(id,w);
     if(h>48) items.push({t:'danger',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h — CRITICAL 48h EXCEEDANCE`});
-    else if(h>38) items.push({t:'warn',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h this Wk (Max 48h)`});
+    else if(h>48) items.push({t:'warn',cat:'48h',m:`${a.name} S${w}: ${(+h).toFixed(1)}h this Wk (Max 48h)`});
     // 2 nights consecutive max
     let nc=0;
     for(let d=0;d<7;d++){
